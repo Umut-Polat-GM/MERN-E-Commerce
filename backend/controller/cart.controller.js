@@ -6,7 +6,7 @@ export const getCartProducts = async (req, res) => {
 
         // Add quantity to each product
         const cartItems = products.map((product) => {
-            const item = req.user.cartItems.find(cartItem => cartItem.id == product.id);
+            const item = req.user.cartItems.find((cartItem) => cartItem.id == product.id);
             return { ...product.toJSON(), quantity: item.quantity };
         });
 
@@ -63,7 +63,7 @@ export const updateQuantity = async (req, res) => {
         const { quantity } = req.body;
         const user = req.user;
 
-        const existingItem = user.cartItems.find((item) => item.id == productId);
+        const existingItem = user.cartItems.filter((item) => item._id.toString() === productId);
 
         if (!existingItem) {
             return res.status(404).json({ message: "Item not found in cart" });
