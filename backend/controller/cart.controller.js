@@ -2,17 +2,23 @@ import Product from "../models/product.model.js";
 
 export const getCartProducts = async (req, res) => {
     try {
-        const products = await Product.find({ _id: { $in: req.user.cartItems } });
+        // Kullanıcının `cartItems` dizisinden sadece `product` ID'lerini al
+        const productIds = req.user.cartItems.map((item) => item.product);
 
-        // Add quantity to each product
+        // MongoDB'den ilgili ürünleri getir
+        const products = await Product.find({ _id: { $in: productIds } });
+
+        // Ürünlere `quantity` ekleyerek yeni dizi oluştur
         const cartItems = products.map((product) => {
-            const item = req.user.cartItems.find((cartItem) => cartItem.id == product.id);
-            return { ...product.toJSON(), quantity: item.quantity };
+            const item = req.user.cartItems.find((cartItem) =>
+                cartItem.product.equals(product._id)
+            );
+            return { ...product.toObject(), quantity: item.quantity };
         });
 
         res.status(200).json(cartItems);
     } catch (error) {
-        console.log("Error in getCartProducts controller", error.message);
+        console.error("Error in getCartProducts controller:", error.message);
         res.status(500).json({ message: error.message });
     }
 };
@@ -45,7 +51,7 @@ export const removeAllFromCart = async (req, res) => {
         if (!productId) {
             user.cartItems = [];
         } else {
-            user.cartItems = user.cartItems.filter((item) => item.id != productId);
+            user.cartItems = user.cartItems.filter((item) => item.product.toString() !== productId);
         }
 
         await user.save();
