@@ -21,10 +21,10 @@ function App() {
     }, [checkAuth]);
 
     useEffect(() => {
-		if (!user) return;
+        if (!user) return;
 
-		getCartItems();
-	}, [getCartItems, user]);
+        getCartItems();
+    }, [getCartItems, user]);
 
     if (checkingAuth) return <LoadingSpinner />;
 
@@ -47,8 +47,8 @@ function App() {
                         path="/secret-dashboard"
                         element={user?.role === "admin" ? <AdminPage /> : <Navigate to="/login" />}
                     />
-                    <Route path='/category/:category' element={<CategoryPage />} />
-                    <Route path='/cart' element={user ? <CartPage /> : <Navigate to='/login' />} />
+                    <Route path="/category/:category" element={<CategoryPage />} />
+                    <Route path="/cart" element={user ? <CartPage /> : <Navigate to="/login" />} />
                 </Routes>
             </div>
         </div>
